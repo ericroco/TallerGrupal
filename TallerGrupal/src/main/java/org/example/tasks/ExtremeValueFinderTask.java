@@ -3,78 +3,68 @@ package org.example.tasks;
 import org.example.model.ClimateRecord;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 public class ExtremeValueFinderTask implements Callable<ExtremeValueFinderTask.ExtremeValues> {
     private final List<ClimateRecord> data;
-    
+
     public ExtremeValueFinderTask(List<ClimateRecord> data) {
         this.data = data;
     }
-    
+
     @Override
     public ExtremeValues call() {
-        // Temperatura
-        ClimateRecord coldest = data.stream()
-                .min(Comparator.comparingDouble(ClimateRecord::temp))
-                .orElse(null);
-                
-        ClimateRecord hottest = data.stream()
-                .max(Comparator.comparingDouble(ClimateRecord::temp))
-                .orElse(null);
-        
-        // Visibilidad
-        ClimateRecord lowestVisibility = data.stream()
-                .min(Comparator.comparingDouble(ClimateRecord::visibility))
-                .orElse(null);
-                
-        ClimateRecord highestVisibility = data.stream()
-                .max(Comparator.comparingDouble(ClimateRecord::visibility))
-                .orElse(null);
-        
-        // Humedad
-        ClimateRecord lowestHumidity = data.stream()
-                .min(Comparator.comparingDouble(ClimateRecord::humidity))
-                .orElse(null);
-                
-        ClimateRecord highestHumidity = data.stream()
-                .max(Comparator.comparingDouble(ClimateRecord::humidity))
-                .orElse(null);
-        
-        // Velocidad del viento
-        ClimateRecord lowestWindSpeed = data.stream()
-                .min(Comparator.comparingDouble(ClimateRecord::windSpeed))
-                .orElse(null);
-                
-        ClimateRecord highestWindSpeed = data.stream()
-                .max(Comparator.comparingDouble(ClimateRecord::windSpeed))
-                .orElse(null);
-        
+        if (data == null || data.isEmpty()) {
+            return new ExtremeValues(null, 0.0, null, 0.0, null, 0.0, null, 0.0, null, 0.0, null, 0.0, null, 0.0, null, 0.0);
+        }
+
+        ClimateRecord coldest = data.get(0);
+        ClimateRecord hottest = data.get(0);
+        ClimateRecord lowestVisibility = data.get(0);
+        ClimateRecord highestVisibility = data.get(0);
+        ClimateRecord lowestHumidity = data.get(0);
+        ClimateRecord highestHumidity = data.get(0);
+        ClimateRecord lowestWindSpeed = data.get(0);
+        ClimateRecord highestWindSpeed = data.get(0);
+
+        for (ClimateRecord record : data) {
+            if (record.temp() < coldest.temp()) coldest = record;
+            if (record.temp() > hottest.temp()) hottest = record;
+
+            if (record.visibility() < lowestVisibility.visibility()) lowestVisibility = record;
+            if (record.visibility() > highestVisibility.visibility()) highestVisibility = record;
+
+            if (record.humidity() < lowestHumidity.humidity()) lowestHumidity = record;
+            if (record.humidity() > highestHumidity.humidity()) highestHumidity = record;
+
+            if (record.windSpeed() < lowestWindSpeed.windSpeed()) lowestWindSpeed = record;
+            if (record.windSpeed() > highestWindSpeed.windSpeed()) highestWindSpeed = record;
+        }
+
         return new ExtremeValues(
             coldest != null ? coldest.dateTime() : null,
             coldest != null ? coldest.temp() : 0.0,
             hottest != null ? hottest.dateTime() : null,
             hottest != null ? hottest.temp() : 0.0,
-            
+
             lowestVisibility != null ? lowestVisibility.dateTime() : null,
             lowestVisibility != null ? lowestVisibility.visibility() : 0.0,
             highestVisibility != null ? highestVisibility.dateTime() : null,
             highestVisibility != null ? highestVisibility.visibility() : 0.0,
-            
+
             lowestHumidity != null ? lowestHumidity.dateTime() : null,
             lowestHumidity != null ? lowestHumidity.humidity() : 0.0,
             highestHumidity != null ? highestHumidity.dateTime() : null,
             highestHumidity != null ? highestHumidity.humidity() : 0.0,
-            
+
             lowestWindSpeed != null ? lowestWindSpeed.dateTime() : null,
             lowestWindSpeed != null ? lowestWindSpeed.windSpeed() : 0.0,
             highestWindSpeed != null ? highestWindSpeed.dateTime() : null,
             highestWindSpeed != null ? highestWindSpeed.windSpeed() : 0.0
         );
     }
-    
+
     public static class ExtremeValues {
         // Temperatura
         public final LocalDateTime coldestDateTime;
