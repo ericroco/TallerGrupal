@@ -15,7 +15,7 @@ public class App {
             ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             
             // Crear y enviar la tarea
-            TaskSummarize task = new TaskSummarize("weatherHistory.csv");
+            TaskSummarize task = new TaskSummarize("TallerGrupal/weatherHistory.csv");
             Future<ClimateSummary> future = executor.submit(task);
             
             // Esperar y obtener el resultado
